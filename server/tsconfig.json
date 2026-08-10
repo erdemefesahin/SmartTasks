@@ -1,0 +1,13 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "module": "ES2020",
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "types": ["node", "jest"]
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}

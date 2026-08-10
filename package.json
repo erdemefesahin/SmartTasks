@@ -1,0 +1,20 @@
+{
+  "name": "smarttasks",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev:client": "npm --workspace client run dev",
+    "dev:server": "npm --workspace server run dev",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "build": "npm --workspace server run build && npm --workspace client run build",
+    "lint": "npm --workspace server run lint && npm --workspace client run lint",
+    "format": "npm --workspace server run format && npm --workspace client run format"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
