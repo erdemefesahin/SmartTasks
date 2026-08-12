@@ -1,0 +1,11 @@
+import { Router } from 'express';
+import { authenticate } from '../middleware/authMiddleware.js';
+import { createTaskController, getTasksController, updateTaskController, deleteTaskController, toggleTaskCompleteController, } from '../controllers/taskController.js';
+const router = Router();
+router.use(authenticate);
+router.get('/', getTasksController);
+router.post('/', createTaskController);
+router.put('/:taskId', updateTaskController);
+router.delete('/:taskId', deleteTaskController);
+router.patch('/:taskId/complete', toggleTaskCompleteController);
+export default router;
