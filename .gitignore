@@ -1,7 +1,8 @@
 *.db
 *.sqlite
 server/src/**/*.js
-server/tsconfig.tsbuildinfo
+client/src/**/*.js
+*.tsbuildinfo
 node_modules/
 dist/
 build/
