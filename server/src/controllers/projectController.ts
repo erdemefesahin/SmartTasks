@@ -10,7 +10,7 @@ const projectSchema = z.object({
 
 export async function getProjectsController(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   try {
-    const userId = req.userId;
+    const userId = req.userId!;
     const projects = await prisma.project.findMany({
       where: { ownerId: userId },
       include: { tasks: true },
@@ -24,7 +24,7 @@ export async function getProjectsController(req: AuthenticatedRequest, res: Resp
 
 export async function createProjectController(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   try {
-    const userId = req.userId;
+    const userId = req.userId!;
     const payload = projectSchema.parse(req.body);
     const project = await prisma.project.create({
       data: {
@@ -41,7 +41,7 @@ export async function createProjectController(req: AuthenticatedRequest, res: Re
 
 export async function updateProjectController(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   try {
-    const userId = req.userId;
+    const userId = req.userId!;
     const { projectId } = req.params;
     const payload = projectSchema.partial().parse(req.body);
 
@@ -62,7 +62,7 @@ export async function updateProjectController(req: AuthenticatedRequest, res: Re
 
 export async function deleteProjectController(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   try {
-    const userId = req.userId;
+    const userId = req.userId!;
     const { projectId } = req.params;
 
     const existing = await prisma.project.findUnique({ where: { id: projectId } });

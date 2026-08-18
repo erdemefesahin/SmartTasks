@@ -9,7 +9,7 @@ const subtaskSchema = z.object({
 
 export async function createSubtaskController(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   try {
-    const userId = req.userId;
+    const userId = req.userId!;
     const { taskId } = req.params;
     const payload = subtaskSchema.parse(req.body);
 
@@ -29,7 +29,7 @@ export async function createSubtaskController(req: AuthenticatedRequest, res: Re
 
 export async function toggleSubtaskController(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   try {
-    const userId = req.userId;
+    const userId = req.userId!;
     const { subtaskId } = req.params;
 
     const subtask = await prisma.subtask.findUnique({ where: { id: subtaskId }, include: { task: { include: { project: true } } } });
@@ -49,7 +49,7 @@ export async function toggleSubtaskController(req: AuthenticatedRequest, res: Re
 
 export async function deleteSubtaskController(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   try {
-    const userId = req.userId;
+    const userId = req.userId!;
     const { subtaskId } = req.params;
 
     const subtask = await prisma.subtask.findUnique({ where: { id: subtaskId }, include: { task: { include: { project: true } } } });

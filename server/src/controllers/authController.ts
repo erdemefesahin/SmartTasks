@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import prisma from '../services/prismaClient.js';
 import { z } from 'zod';
+import { AuthenticatedRequest } from '../middleware/authMiddleware.js';
 
 const registerSchema = z.object({
   name: z.string().min(2),
@@ -65,6 +66,65 @@ export async function loginController(req: Request, res: Response, next: NextFun
 
     const token = createToken(user.id);
     res.json({ token, user: { id: user.id, email: user.email, name: user.name } });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function meController(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId! },
+      select: { id: true, email: true, name: true, createdAt: true },
+    });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.json({ user });
+  } catch (error) {
+    next(error);
+  }
+}
+
+const updateProfileSchema = z.object({
+  name: z.string().min(2).optional(),
+  currentPassword: z.string().min(6).optional(),
+  newPassword: z.string().min(6).optional(),
+});
+
+export async function updateProfileController(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  try {
+    const payload = updateProfileSchema.parse(req.body);
+
+    const user = await prisma.user.findUnique({ where: { id: req.userId! } });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const data: { name?: string; password?: string } = {};
+
+    if (payload.name && payload.name !== user.name) {
+      data.name = payload.name;
+    }
+
+    if (payload.newPassword) {
+      if (!payload.currentPassword) {
+        return res.status(400).json({ error: 'Current password is required to change password' });
+      }
+      const passwordMatch = await bcrypt.compare(payload.currentPassword, user.password);
+      if (!passwordMatch) {
+        return res.status(400).json({ error: 'Current password is incorrect' });
+      }
+      data.password = await bcrypt.hash(payload.newPassword, 10);
+    }
+
+    const updated = await prisma.user.update({
+      where: { id: user.id },
+      data,
+      select: { id: true, email: true, name: true, createdAt: true },
+    });
+
+    res.json({ user: updated });
   } catch (error) {
     next(error);
   }

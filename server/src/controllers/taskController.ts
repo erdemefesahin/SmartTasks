@@ -14,7 +14,7 @@ const taskSchema = z.object({
 
 export async function getTasksController(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   try {
-    const userId = req.userId;
+    const userId = req.userId!;
     const tasks = await prisma.task.findMany({
       where: {
         project: { ownerId: userId },
@@ -30,7 +30,7 @@ export async function getTasksController(req: AuthenticatedRequest, res: Respons
 
 export async function createTaskController(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   try {
-    const userId = req.userId;
+    const userId = req.userId!;
     const payload = taskSchema.parse(req.body);
 
     const project = await prisma.project.findUnique({ where: { id: payload.projectId } });
@@ -57,7 +57,7 @@ export async function createTaskController(req: AuthenticatedRequest, res: Respo
 
 export async function updateTaskController(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   try {
-    const userId = req.userId;
+    const userId = req.userId!;
     const { taskId } = req.params;
     const payload = taskSchema.partial().parse(req.body);
 
@@ -81,7 +81,7 @@ export async function updateTaskController(req: AuthenticatedRequest, res: Respo
 
 export async function deleteTaskController(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   try {
-    const userId = req.userId;
+    const userId = req.userId!;
     const { taskId } = req.params;
 
     const existing = await prisma.task.findUnique({ where: { id: taskId }, include: { project: true } });
@@ -99,7 +99,7 @@ export async function deleteTaskController(req: AuthenticatedRequest, res: Respo
 
 export async function toggleTaskCompleteController(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   try {
-    const userId = req.userId;
+    const userId = req.userId!;
     const { taskId } = req.params;
 
     const existing = await prisma.task.findUnique({ where: { id: taskId }, include: { project: true } });
