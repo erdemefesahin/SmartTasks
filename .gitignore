@@ -1,4 +1,5 @@
 *.db
+*.db-journal
 *.sqlite
 server/src/**/*.js
 client/src/**/*.js

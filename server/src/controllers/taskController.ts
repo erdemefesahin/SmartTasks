@@ -9,6 +9,7 @@ const taskSchema = z.object({
   projectId: z.string().cuid(),
   priority: z.enum(['LOW', 'MEDIUM', 'HIGH']).optional(),
   estimate: z.number().int().positive().optional(),
+  dueDate: z.string().optional().transform((val) => val ? new Date(val) : undefined),
 });
 
 export async function getTasksController(req: AuthenticatedRequest, res: Response, next: NextFunction) {
@@ -43,6 +44,7 @@ export async function createTaskController(req: AuthenticatedRequest, res: Respo
         description: payload.description,
         priority: payload.priority ?? 'MEDIUM',
         estimate: payload.estimate,
+        dueDate: payload.dueDate,
         projectId: payload.projectId,
       },
       include: { subtasks: true, project: true },
