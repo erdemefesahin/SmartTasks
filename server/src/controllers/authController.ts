@@ -16,6 +16,11 @@ const loginSchema = z.object({
   password: z.string().min(6),
 });
 
+const forgotPasswordSchema = z.object({
+  email: z.string().email(),
+  newPassword: z.string().min(6),
+});
+
 function createToken(userId: string) {
   const secret = process.env.JWT_SECRET;
   if (!secret) {
@@ -66,6 +71,27 @@ export async function loginController(req: Request, res: Response, next: NextFun
 
     const token = createToken(user.id);
     res.json({ token, user: { id: user.id, email: user.email, name: user.name } });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function forgotPasswordController(req: Request, res: Response, next: NextFunction) {
+  try {
+    const payload = forgotPasswordSchema.parse(req.body);
+
+    const user = await prisma.user.findUnique({ where: { email: payload.email } });
+    if (!user) {
+      return res.status(400).json({ error: 'No account found with that email' });
+    }
+
+    const hashedPassword = await bcrypt.hash(payload.newPassword, 10);
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { password: hashedPassword },
+    });
+
+    res.json({ success: true, message: 'Password reset successfully. You can now sign in.' });
   } catch (error) {
     next(error);
   }

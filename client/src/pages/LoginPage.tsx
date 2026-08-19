@@ -72,6 +72,11 @@ function LoginPage({ dark, toggle }: { dark: boolean; toggle: () => void }) {
             Create an account
           </Link>
         </p>
+        <p className="mt-3 text-center text-sm">
+          <Link to="/forgot-password" className="font-medium text-slate-600 hover:underline dark:text-slate-400">
+            Forgot your password?
+          </Link>
+        </p>
       </div>
     </div>
   );
